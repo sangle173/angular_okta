@@ -1,0 +1,156 @@
+<div class="upload-container">
+  <!-- Header -->
+  <header class="upload-header">
+    <button class="back-button" (click)="goBack()">← Back to Home</button>
+    <h1>📁 File Upload Center</h1>
+    <p>Upload and share files across your local network</p>
+  </header>
+
+  <!-- Upload Area -->
+  <div class="upload-section">
+    <div class="drop-zone" 
+         (dragover)="onDragOver($event)" 
+         (dragleave)="onDragLeave($event)"
+         (drop)="onDrop($event)"
+         [class.drag-over]="isDragOver">
+      <div class="drop-zone-content">
+        <div class="upload-icon">📤</div>
+        <h3>Drag & Drop Files Here</h3>
+        <p>or click to browse files</p>
+        <input type="file" 
+               #fileInput 
+               multiple 
+               (change)="onFileSelected($event)"
+               class="file-input">
+        <button class="browse-button" (click)="fileInput.click()">
+          Choose Files
+        </button>
+      </div>
+    </div>
+
+    <!-- Network Info -->
+    <div class="network-info">
+      <h4>🌐 Network Access</h4>
+      <p>Other devices can access this upload page at:</p>
+      <code class="network-url">http://{{localIP}}:4200/upload</code>
+      <button class="copy-button" (click)="copyToClipboard()">Copy URL</button>
+    </div>
+  </div>
+
+  <!-- Upload Progress -->
+  <div class="progress-section" *ngIf="uploads.length > 0">
+    <div class="progress-header">
+      <h3>📊 Upload Progress</h3>
+      <div class="folder-buttons">
+        <button class="folder-button" (click)="openUploadsFolder()">
+          📁 Open Uploads Folder
+        </button>
+        <button class="folder-button" (click)="openConvertsFolder()">
+          🎬 Open Converts Folder
+        </button>
+      </div>
+    </div>
+    <div class="upload-list">
+      <div class="upload-item" *ngFor="let upload of uploads; trackBy: trackByFile">
+        <div class="file-info">
+          <span class="file-icon">{{getFileIcon(upload.file)}}</span>
+          <div class="file-details">
+            <div class="file-name clickable" (click)="previewFile(upload)">{{upload.file.name}}</div>
+            <div class="file-metadata">
+              <span class="file-size">{{formatFileSize(upload.file.size)}}</span>
+              <span class="file-date" [ngClass]="{'today': isToday(upload.file.lastModified)}">
+                {{formatFileDate(upload.file.lastModified)}}
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="progress-info">
+          <div class="status-badge" [ngClass]="upload.status">
+            {{getStatusText(upload.status)}}
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="upload.progress"></div>
+          </div>
+          <div class="progress-text">{{upload.progress}}%</div>
+        </div>
+
+        <!-- Video Conversion Info -->
+        <div class="conversion-info" *ngIf="isVideoFile(upload.file) && upload.status === 'completed'">
+          <div class="conversion-status">
+            🎬 Video conversion available
+            <button class="convert-button" (click)="convertVideo(upload)" 
+                    [disabled]="conversionInProgress.has(upload.file.name)">
+              {{conversionInProgress.has(upload.file.name) ? 'Converting...' : 'Compress Video'}}
+            </button>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" *ngIf="upload.status === 'error'">
+          ❌ {{upload.error}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conversion Progress -->
+  <div class="conversion-section" *ngIf="conversions.length > 0">
+    <h3>🎬 Video Conversion Progress</h3>
+    <div class="conversion-list">
+      <div class="conversion-item" *ngFor="let conversion of conversions">
+        <div class="conversion-details">
+          <div class="conversion-name">{{conversion.filename}}</div>
+          <div class="conversion-sizes">
+            Original: {{formatFileSize(conversion.originalSize)}}
+            <span *ngIf="conversion.compressedSize">
+              → Compressed: {{formatFileSize(conversion.compressedSize)}}
+              ({{getCompressionRatio(conversion.originalSize, conversion.compressedSize)}}% smaller)
+            </span>
+          </div>
+        </div>
+        <div class="conversion-status" [ngClass]="conversion.status">
+          {{conversion.status}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Uploads -->
+  <div class="recent-section" *ngIf="recentUploads.length > 0">
+    <h3>📋 Recent Uploads</h3>
+    <div class="recent-list">
+      <div class="recent-item" *ngFor="let upload of getSortedRecentUploads()">
+        <span class="file-icon">{{getFileIconForRecentUpload(upload)}}</span>
+        <div class="recent-details">
+          <div class="recent-name clickable" (click)="previewRecentFile(upload)">{{upload.name}}</div>
+          <div class="recent-metadata">
+            <span class="recent-time" [ngClass]="{'today': isRecentToday(upload.timestamp)}">
+              {{getTimeAgo(upload.timestamp)}}
+            </span>
+            <span class="recent-size">{{formatFileSize(upload.size)}}</span>
+          </div>
+        </div>
+        <div class="file-actions">
+          <button class="action-icon download-icon" (click)="downloadFile(upload)" title="Download">
+            📥
+          </button>
+          <button 
+            *ngIf="isVideoFileByType(upload.type)" 
+            class="action-icon convert-icon" 
+            (click)="convertRecentVideo(upload)"
+            [disabled]="isConvertingFile(upload.name)"
+            [title]="isConvertingFile(upload.name) ? 'Converting...' : 'Convert Video'">
+            <span *ngIf="!isConvertingFile(upload.name)">🎬</span>
+            <span *ngIf="isConvertingFile(upload.name)" class="converting-spinner">⚙️</span>
+          </button>
+          <div 
+            *ngIf="isConvertingFile(upload.name)" 
+            class="conversion-progress-inline">
+            {{getConversionProgress(upload.name)}}%
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
