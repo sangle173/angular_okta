@@ -1,194 +1,178 @@
-# Angular Tool
+# Angular File Upload Tool with Video Conversion
 
-This is a modern Angular project created with [Angular CLI](https://github.com/angular/angular-cli) version 20.1.4.
+A comprehensive Angular application for file uploads with network sharing, video compression using HandBrake CLI, and an Okta-style homepage interface.
 
-## Key Features
-- **Modern Angular Architecture**: Uses Angular 20 with traditional Zone.js for stable change detection
-- **Standalone Components**: Built with standalone components (no NgModules)
-- **TypeScript**: Full TypeScript support with strict mode enabled
-- **Angular Router**: Configured for single-page application routing
-- **Modern Tooling**: Includes VS Code configuration, ESLint, Prettier, and Karma testing
+## 🚀 Features
 
-## 🚀 File Upload Features
-- **Network File Sharing**: Upload files accessible across your local network
-- **Progress Tracking**: Real-time upload progress with visual progress bars
-- **Video Compression**: Automatic video compression using HandBrake CLI for MP4/MOV files
-- **Drag & Drop**: Intuitive drag-and-drop file upload interface
-- **Multiple File Support**: Upload multiple files simultaneously
-- **File Management**: View recent uploads and download files
+- **File Upload System**: Drag & drop or click to upload files
+- **Network Access**: Access from any device on the same network
+- **Video Conversion**: Compress videos using HandBrake CLI
+- **Recent Uploads**: View and manage uploaded files with sorting by date
+- **File Management**: Download files, convert videos, and open folders
+- **Progress Tracking**: Real-time upload and conversion progress
+- **Cross-Platform**: Works on Linux (Kubuntu), with folder opening support
 
-## 🏠 Okta-Style Homepage
-- Clean, professional interface inspired by Okta's design
-- Application grid with future expansion capabilities
-- Responsive design for desktop and mobile devices
-- Centralized navigation for multiple applications
+## 🛠️ Tech Stack
 
-## Prerequisites
+### Frontend
+- **Angular 20** with standalone components
+- **TypeScript** with strict mode
+- **RxJS** for reactive programming
+- **CSS** for styling with modern UI/UX
 
-Before running this application, make sure you have:
+### Backend
+- **Node.js** with Express
+- **Multer** for file uploads
+- **HandBrake CLI** for video compression
+- **mime-types** for file type detection
+- **CORS** for cross-origin requests
 
-1. **Node.js** (v18 or higher)
-2. **Angular CLI** (v20 or higher)
-3. **HandBrake CLI** for video compression:
+## 📦 Installation
+
+### Prerequisites
+- Node.js (v18+)
+- Angular CLI (`npm install -g @angular/cli`)
+- HandBrake CLI for video conversion:
+  ```bash
+  sudo apt install handbrake-cli  # Ubuntu/Debian
+  ```
+
+### Setup
+1. Clone the repository:
    ```bash
-   sudo apt install handbrake-cli  # Ubuntu/Debian
-   brew install handbrake          # macOS
+   git clone https://github.com/sangle173/angular_okta.git
+   cd angular_okta
    ```
 
-## 🔧 Setup & Installation
-
-1. **Clone and install dependencies:**
+2. Install dependencies:
    ```bash
-   git clone <repository-url>
-   cd angular_tool
+   # Frontend dependencies
    npm install
-   ```
-
-2. **Install backend dependencies:**
-   ```bash
+   
+   # Backend dependencies
    cd backend
    npm install
    cd ..
    ```
 
-3. **Start the backend server:**
+3. Start the application:
    ```bash
-   cd backend
-   npm start
+   # Start both frontend and backend
+   ./start.sh
+   
+   # Or start individually:
+   # Frontend: ng serve
+   # Backend: cd backend && node server.js
    ```
-   The backend will be available at:
-   - Local: `http://localhost:3000`
-   - Network: `http://[your-ip]:3000`
 
-4. **Start the Angular development server:**
-   ```bash
-   npm start
-   ```
-   The application will be available at:
-   - Local: `http://localhost:4200`
-   - Network: `http://[your-ip]:4200`
+4. Access the application:
+   - Local: http://localhost:4200
+   - Network: http://[your-ip]:4200
 
-## 🌐 Network Access
+## � Usage
 
-The application is configured to accept connections from other devices on your local network:
+### File Upload
+1. Navigate to the Upload page
+2. Drag & drop files or click to select
+3. Monitor upload progress
+4. View files in the Recent Uploads section
 
-- **Frontend**: `http://[your-ip]:4200`
-- **Backend**: `http://[your-ip]:3000`
+### Video Conversion
+1. Upload a video file (MP4, MOV, AVI)
+2. Click the convert icon (🎬) next to the video
+3. Monitor conversion progress
+4. Download the compressed video from the Converts folder
 
-Other devices can access the upload page directly at: `http://[your-ip]:4200/upload`
+### Network Access
+- The application automatically detects your network IP
+- Share the network URL with other devices on the same network
+- Files uploaded from any device are accessible from all devices
+
+### Folder Management
+- Click "Open Uploads Folder" to view uploaded files in file manager
+- Click "Open Converts Folder" to view converted videos
+- Supports Linux file managers via xdg-open
 
 ## 📁 Project Structure
 
 ```
-angular_tool/
-├── .github/
-│   └── copilot-instructions.md    # Copilot workspace instructions
-├── .vscode/                       # VS Code configuration
-├── backend/                       # Node.js backend server
-│   ├── server.js                  # Express server with file upload
-│   ├── uploads/                   # Uploaded files storage
-│   └── processed/                 # Compressed video files
+angular_okta/
 ├── src/
 │   ├── app/
 │   │   ├── components/
-│   │   │   ├── home/              # Okta-style homepage
-│   │   │   └── upload/            # File upload interface
+│   │   │   ├── home/           # Okta-style homepage
+│   │   │   └── upload/         # File upload interface
 │   │   └── services/
-│   │       ├── upload.ts          # File upload service
-│   │       └── video-converter.ts # Video compression service
-│   └── ...
-└── ...
+│   │       ├── upload.ts       # File upload service
+│   │       └── video-converter.ts
+│   ├── index.html
+│   └── main.ts
+├── backend/
+│   ├── server.js              # Express server
+│   ├── package.json
+│   └── uploads/              # Upload directory (auto-created)
+├── start.sh                  # Start script
+├── stop.sh                   # Stop script
+└── README.md
 ```
 
-## 🎬 Video Compression
+## � Configuration
 
-The application automatically detects video files (MP4, MOV) and offers compression using HandBrake CLI:
+### Backend Server
+- Port: 3000 (configurable via PORT environment variable)
+- Upload directory: `~/Desktop/Uploads`
+- Processed directory: `~/Desktop/Converts`
+- File size limit: 500MB
 
-- **Compression Settings**: Fast 1080p30 preset for optimal size/quality balance
-- **Progress Tracking**: Real-time conversion status
-- **File Size Comparison**: Shows original vs compressed file sizes
-- **Storage**: Compressed files are stored in `backend/processed/`
+### Angular App
+- Port: 4200
+- Automatic network IP detection
+- Zoneless architecture (experimental)
 
-## 🔨 Available Scripts
+## 🎨 UI Features
 
-### Frontend
-- `npm start` - Start development server (accessible on network)
-- `npm run build` - Build for production
-- `npm test` - Run unit tests
-- `ng generate component <name>` - Generate new component
+- **Modern Interface**: Clean, responsive design
+- **File Icons**: Visual file type indicators
+- **Progress Bars**: Real-time upload/conversion progress
+- **Sorting**: Files sorted by creation date (newest first)
+- **Action Icons**: Download and convert buttons with intuitive icons
+- **Today's Highlights**: Green highlighting for files uploaded today
 
-### Backend
-- `cd backend && npm start` - Start file upload server
-- `cd backend && npm run dev` - Start with nodemon for development
+## 🐛 Troubleshooting
 
-## 🛠️ Development Commands
+### Video Conversion Issues
+- Ensure HandBrake CLI is installed: `handbrake --version`
+- Check video file format compatibility
+- Monitor server logs for conversion errors
 
-```bash
-# Generate new component
-ng generate component components/new-component
+### Network Access Issues
+- Verify firewall settings allow port 3000 and 4200
+- Check network connectivity between devices
+- Ensure both frontend and backend are running
 
-# Generate new service
-ng generate service services/new-service
-
-# Build for production
-ng build --configuration production
-
-# Run tests
-ng test
-```
-
-## 🔧 Configuration
-
-### Network Configuration
-The backend automatically detects your local IP address and configures CORS accordingly. No manual configuration needed.
-
-### Upload Configuration
-- **Max file size**: 500MB per file
-- **Supported formats**: All file types
-- **Video compression**: MP4, MOV, AVI
-- **Storage location**: `backend/uploads/` and `backend/processed/`
-
-## 🚀 Deployment
-
-For production deployment:
-
-1. Build the Angular application:
-   ```bash
-   ng build --configuration production
-   ```
-
-2. Configure your web server to serve the `dist/` folder
-3. Run the backend server with a process manager like PM2:
-   ```bash
-   npm install -g pm2
-   cd backend
-   pm2 start server.js --name angular-tool-backend
-   ```
-
-## 🎯 Future Features
-
-The homepage is designed to accommodate additional applications:
-- Analytics dashboard
-- User management
-- Security monitoring
-- Mobile device sync
-- And more...
-
-## 📋 Browser Support
-
-- Chrome (recommended)
-- Firefox
-- Safari
-- Edge
+### File Upload Issues
+- Check available disk space
+- Verify upload directory permissions
+- Check file size limits (500MB default)
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+2. Create a feature branch: `git checkout -b feature/new-feature`
+3. Commit changes: `git commit -am 'Add new feature'`
+4. Push to branch: `git push origin feature/new-feature`
+5. Submit a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 👨‍💻 Author
+
+**sangle173**
+- Email: leducsang.10dt2@gmail.com
+- GitHub: [@sangle173](https://github.com/sangle173)
+
+---
+
+Made with ❤️ using Angular and Node.js
